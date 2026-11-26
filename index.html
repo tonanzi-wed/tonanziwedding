@@ -98,6 +98,21 @@ h3.hd{font:400 1.5em var(--head);letter-spacing:.14em;text-transform:uppercase;c
 .env.open .eflap{transform:rotateX(180deg);z-index:0}
 .env.open .eseal{opacity:0}
 .env.open .ecard{transform:translateY(-64%);z-index:5}
+
+/* ── RSVP page styles (NEW) ── */
+.rsvp{width:100%;display:flex;flex-direction:column;gap:.6em}
+.rsvp .lbl{font:500 .58em var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--leaf);text-align:left;margin-bottom:.25em}
+.rsvp input[type=text]{width:100%;padding:.55em .7em;border:1px solid var(--gold);background:#fffdf7;color:var(--ink);font:400 1em var(--serif);border-radius:0;outline:none}
+.rsvp input[type=text]:focus{border-color:var(--maroon)}
+.rrow{display:flex;align-items:center;justify-content:space-between;gap:.5em;border-bottom:1px solid #c9a45c44;padding:.35em 0}
+.rrow span{font:400 .95em var(--serif);color:var(--ink);text-align:left;flex:1}
+.tg{display:flex;gap:.3em}
+.tg label{position:relative;cursor:pointer;font:500 .55em var(--sans);letter-spacing:.1em;padding:.35em .55em;border:1px solid var(--gold2);color:var(--gold2);border-radius:2px;transition:.2s;user-select:none}
+.tg input{position:absolute;opacity:0;pointer-events:none}
+.tg input:checked + label{background:var(--leaf);color:var(--ivory);border-color:var(--leaf)}
+.tg input[value="no"]:checked + label{background:var(--maroon);border-color:var(--maroon)}
+.rsvp .btn{margin-top:.9em;width:100%}
+.rsvp .status{font:italic 400 .8em var(--serif);color:var(--leaf);min-height:1.2em;text-align:center}
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute"><symbol id="lotus" viewBox="-34 -22 68 44"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M0 18C-10 8-10-8 0-20 10-8 10 8 0 18Z"/><path d="M0 18C-18 12-24-4-16-14-6-8 0 4 0 18Z"/><path d="M0 18C18 12 24-4 16-14 6-8 0 4 0 18Z"/><path d="M0 18C-26 18-34 4-28-6-16-4-6 6 0 18Z"/><path d="M0 18C26 18 34 4 28-6 16-4 6 6 0 18Z"/></g></symbol></svg>
@@ -136,19 +151,65 @@ const first=D([2027,2,1]).getUTCDay(),days=new Date(Date.UTC(2027,2,0)).getUTCDa
 let cells=['S','M','T','W','T','F','S'].map(d=>`<b>${d}</b>`).join('')+'<span></span>'.repeat(first);
 for(let i=1;i<=days;i++)cells+=`<span class="${EVENTS.some(e=>e.date[2]===i)?'hl':''}">${i}</span>`;
 const MAP={groom:'https://maps.app.goo.gl/4cDciTp2h85x5sFu7',bride:'https://maps.app.goo.gl/uKZrCpu2J8eQC9rv9'};
+
+/* ── NEW: RSVP page HTML (goes just before the final "With Love" page) ── */
+const rsvpPage = `
+<div class="small sm2 a">Kindly Reply</div>
+<h2 class="t a" style="font-size:2.6em">Will You Attend?</h2>
+<div class="orn a">◆</div>
+<form class="rsvp a" id="rsvpForm" autocomplete="off">
+  <div>
+    <div class="lbl">Your Name</div>
+    <input type="text" name="name" placeholder="Full name" required maxlength="80">
+  </div>
+  <div class="rrow">
+    <span>Heijingpot <em style="color:var(--pink);font-size:.85em">· 6 Feb</em></span>
+    <div class="tg">
+      <input type="radio" id="h-yes" name="heijingpot" value="yes" required><label for="h-yes">Yes</label>
+      <input type="radio" id="h-no"  name="heijingpot" value="no"><label for="h-no">No</label>
+    </div>
+  </div>
+  <div class="rrow">
+    <span>Luhongba <em style="color:var(--pink);font-size:.85em">· 8 Feb</em></span>
+    <div class="tg">
+      <input type="radio" id="l-yes" name="luhongba" value="yes" required><label for="l-yes">Yes</label>
+      <input type="radio" id="l-no"  name="luhongba" value="no"><label for="l-no">No</label>
+    </div>
+  </div>
+  <div class="rrow">
+    <span>Mapam Chakkouba <em style="color:var(--pink);font-size:.85em">· 12 Feb</em></span>
+    <div class="tg">
+      <input type="radio" id="m-yes" name="mapam" value="yes" required><label for="m-yes">Yes</label>
+      <input type="radio" id="m-no"  name="mapam" value="no"><label for="m-no">No</label>
+    </div>
+  </div>
+  <button type="submit" class="btn a">Send RSVP</button>
+  <div class="status" id="rsvpStatus"></div>
+</form>
+<button class="btn a" id="again">Read again</button>
+`;
+
+/* ── FormSubmit.co endpoint ──
+   After activating tonpuyam@gmail.com at https://formsubmit.co,
+   copy the hashed string they give you and replace YOUR_HASH_HERE below.
+   The email address will NOT appear in the HTML. */
+const RSVP_ENDPOINT = "https://formsubmit.co/ajax/YOUR_HASH_HERE";
+
 const pages=[
  pg(`${L}<div class="small sm2 a" style="margin-top:1em">Together with their families</div><h1 class="nm a">Tondonba<em>and</em>Anzila</h1><div class="names a">Dr. Puyam Tondonba Singh<br>&amp; Dr. Anzila Laikhuram</div><div class="orn a">◆</div><div class="small sm2 a">invite you to their wedding ceremony</div><div class="dt a">${full(W)}</div>`),
  ...EVENTS.map(e=>pg(`<div class="${e.main?'main':''}" style="display:contents"><div class="small sm2 a">${e.main?'The Wedding':'Celebration'}</div><div class="med a ${e.anim}"><b>${String(e.date[2]).padStart(2,'0')}</b><i>${fmt(e.date,{month:'short'})}</i></div><h2 class="t a">${e.name}</h2><h3 class="hd a">${fmt(e.date,{weekday:'long'})}</h3><div class="when a">${fmt(e.date,{day:'numeric',month:'long',year:'numeric'})} · ${e.time}</div><div class="small green a">${e.place}</div><a class="small a" style="color:var(--pink);margin-top:1em;text-decoration:none;border-bottom:1px solid var(--gold)" href="${MAP.bride}" target="_blank" rel="noopener">View Location</a></div>`)),
  pg(`<h2 class="t a">Our Families</h2><div class="fam"><div class="a l"><div class="small sm2">Groom’s Family</div><p>S/O Late Puyam Brojen Singh &amp;<br>Puyam (O) Quebeta Devi<br>of Khurai Chingangbam Leikai,<br>Thingom Leirak</p></div><div class="orn a">◆</div><div class="a r"><div class="small sm2">Bride’s Family</div><p>D/O Laikhuram Chaoba Singh &amp;<br>Laikhuram (O) Shanti Devi<br>of Top Mayai Leikai, Yaralpat</p></div></div>`),
  pg(`<h2 class="t a" style="font-size:2.6em">Save the Dates</h2><h3 class="hd a">February 2027</h3><div class="cal a z"><div class="grid">${cells}</div></div><div class="legend a">${EVENTS.map(e=>`<div><i></i><b>${fmt(e.date,{weekday:'short',day:'numeric',month:'short'})}</b> — ${e.name}, ${e.time}</div>`).join('')}</div>`),
- pg(`${L}<h2 class="t a" style="margin-top:.4em">With Love</h2><div class="small sm2 a">We look forward to celebrating with you</div><div class="orn a">◆</div><a class="btn a" href="${MAP.groom}" target="_blank" rel="noopener">Groom’s Location</a><a class="btn a" href="${MAP.bride}" target="_blank" rel="noopener">Bride’s Location</a><button class="btn a" id="again">Read again</button>`)
+ /* ── INSERT RSVP PAGE HERE ── */
+ pg(rsvpPage),
+ pg(`${L}<h2 class="t a" style="margin-top:.4em">With Love</h2><div class="small sm2 a">We look forward to celebrating with you</div><div class="orn a">◆</div><a class="btn a" href="${MAP.groom}" target="_blank" rel="noopener">Groom’s Location</a><a class="btn a" href="${MAP.bride}" target="_blank" rel="noopener">Bride’s Location</a><button class="btn a" id="again2">Read again</button>`)
 ];
 const book=document.getElementById('book');
 book.innerHTML=[cover,...pages].map((h,i)=>`<div class="leaf" style="z-index:${50-i}">${h}</div>`).join('');
 const leaves=[...book.children],stage=document.getElementById('stage'),dots=document.getElementById('dots');
 leaves.forEach(l=>l.querySelectorAll('.a').forEach((el,i)=>el.style.setProperty('--d',(i*.16).toFixed(2))));
 dots.innerHTML=pages.map(()=>'<i></i>').join('');
-const bg=document.querySelector('.bgimg'),POS=['50% 22%','30% 30%','28% 32%','50% 38%','78% 40%','50% 8%','45% 88%','50% 55%'];
+const bg=document.querySelector('.bgimg'),POS=['50% 22%','30% 30%','28% 32%','50% 38%','78% 40%','50% 8%','45% 88%','50% 55%','50% 35%'];
 let cur=0;
 function go(n){cur=Math.max(0,Math.min(leaves.length-1,n));
   leaves.forEach((l,i)=>{l.classList.toggle('turned',i<cur);l.classList.toggle('act',i===cur)});
@@ -158,13 +219,50 @@ function go(n){cur=Math.max(0,Math.min(leaves.length-1,n));
 const prev=document.getElementById('prev'),next=document.getElementById('next');
 leaves[0].onclick=()=>{if(cur===0){go(1);play()}};
 prev.onclick=()=>go(cur-1);next.onclick=()=>go(cur+1);
-document.getElementById('again').onclick=()=>go(1);
+
+/* ── NEW: RSVP form submit handler (silent, no email shown in HTML) ── */
+function bindRsvp(){
+  const f=document.getElementById('rsvpForm');
+  if(!f || f.dataset.bound) return;
+  f.dataset.bound='1';
+  f.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const status=document.getElementById('rsvpStatus');
+    const data=Object.fromEntries(new FormData(f));
+    status.textContent='Sending…';
+    try{
+      const r=await fetch(RSVP_ENDPOINT,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({
+          _subject:'Wedding RSVP — '+data.name,
+          name:data.name,
+          heijingpot:data.heijingpot,
+          luhongba:data.luhongba,
+          mapam:data.mapam,
+          sent_at:new Date().toISOString()
+        })
+      });
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      status.textContent='Thank you, '+data.name+'! Your reply has been received.';
+      f.reset();
+    }catch(err){
+      status.textContent='Could not send — please try again.';
+    }
+  });
+}
+
+const again=document.getElementById('again'), again2=document.getElementById('again2');
+again && (again.onclick=()=>go(1));
+again2 && (again2.onclick=()=>go(1));
 addEventListener('keydown',e=>{if(cur===0){if(e.key==='Enter'||e.key===' '||e.key==='ArrowRight'){go(1);play()}}else if(e.key==='ArrowRight')go(cur+1);else if(e.key==='ArrowLeft'&&cur>1)go(cur-1)});
 let sx=null;addEventListener('touchstart',e=>sx=e.touches[0].clientX,{passive:true});
 addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)<45)return;if(dx<0){if(cur===0){go(1);play()}else go(cur+1)}else if(cur>1)go(cur-1)});
 const env=document.getElementById('env'),intro=document.getElementById('intro');let opened=false;
 env.onclick=()=>{if(opened)return;opened=true;env.classList.add('open');play();setTimeout(()=>intro.classList.add('gone'),3300)};
 go(0);
+// Bind RSVP once the DOM for that page exists (it's inserted via innerHTML above)
+bindRsvp();
 // petals
 const cols=['#c9a45c','#e3c98a','#b4685c','#f3e6c4','#d8a28f'];
 for(let i=0;i<18;i++){const p=document.createElement('span'),s=.5+Math.random()*.8;p.className='petal';
