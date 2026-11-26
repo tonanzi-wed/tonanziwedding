@@ -99,7 +99,7 @@ h3.hd{font:400 1.5em var(--head);letter-spacing:.14em;text-transform:uppercase;c
 .env.open .eseal{opacity:0}
 .env.open .ecard{transform:translateY(-64%);z-index:5}
 
-/* ── RSVP page styles (NEW) ── */
+/* ── RSVP page styles ── */
 .rsvp{width:100%;display:flex;flex-direction:column;gap:.6em}
 .rsvp .lbl{font:500 .58em var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--leaf);text-align:left;margin-bottom:.25em}
 .rsvp input[type=text]{width:100%;padding:.55em .7em;border:1px solid var(--gold);background:#fffdf7;color:var(--ink);font:400 1em var(--serif);border-radius:0;outline:none}
@@ -152,7 +152,7 @@ let cells=['S','M','T','W','T','F','S'].map(d=>`<b>${d}</b>`).join('')+'<span></
 for(let i=1;i<=days;i++)cells+=`<span class="${EVENTS.some(e=>e.date[2]===i)?'hl':''}">${i}</span>`;
 const MAP={groom:'https://maps.app.goo.gl/4cDciTp2h85x5sFu7',bride:'https://maps.app.goo.gl/uKZrCpu2J8eQC9rv9'};
 
-/* ── NEW: RSVP page HTML (goes just before the final "With Love" page) ── */
+/* ── RSVP page HTML ── */
 const rsvpPage = `
 <div class="small sm2 a">Kindly Reply</div>
 <h2 class="t a" style="font-size:2.6em">Will You Attend?</h2>
@@ -189,18 +189,18 @@ const rsvpPage = `
 <button class="btn a" id="again">Read again</button>
 `;
 
-/* ── FormSubmit.co endpoint ──
-   After activating tonpuyam@gmail.com at https://formsubmit.co,
-   copy the hashed string they give you and replace YOUR_HASH_HERE below.
-   The email address will NOT appear in the HTML. */
-const RSVP_ENDPOINT = "https://formsubmit.co/ajax/YOUR_HASH_HERE";
+/* ── FormSubmit.co endpoint — ACTIVATE FIRST ──
+   1. Keep this line pointing at angi286@gmail.com for the FIRST test submission.
+   2. Check angi286@gmail.com inbox (and spam) → click the activation link.
+   3. FormSubmit will give you a hashed string; replace the email below with that hash.
+*/
+const RSVP_ENDPOINT = "https://formsubmit.co/ajax/angi286@gmail.com";
 
 const pages=[
  pg(`${L}<div class="small sm2 a" style="margin-top:1em">Together with their families</div><h1 class="nm a">Tondonba<em>and</em>Anzila</h1><div class="names a">Dr. Puyam Tondonba Singh<br>&amp; Dr. Anzila Laikhuram</div><div class="orn a">◆</div><div class="small sm2 a">invite you to their wedding ceremony</div><div class="dt a">${full(W)}</div>`),
  ...EVENTS.map(e=>pg(`<div class="${e.main?'main':''}" style="display:contents"><div class="small sm2 a">${e.main?'The Wedding':'Celebration'}</div><div class="med a ${e.anim}"><b>${String(e.date[2]).padStart(2,'0')}</b><i>${fmt(e.date,{month:'short'})}</i></div><h2 class="t a">${e.name}</h2><h3 class="hd a">${fmt(e.date,{weekday:'long'})}</h3><div class="when a">${fmt(e.date,{day:'numeric',month:'long',year:'numeric'})} · ${e.time}</div><div class="small green a">${e.place}</div><a class="small a" style="color:var(--pink);margin-top:1em;text-decoration:none;border-bottom:1px solid var(--gold)" href="${MAP.bride}" target="_blank" rel="noopener">View Location</a></div>`)),
  pg(`<h2 class="t a">Our Families</h2><div class="fam"><div class="a l"><div class="small sm2">Groom’s Family</div><p>S/O Late Puyam Brojen Singh &amp;<br>Puyam (O) Quebeta Devi<br>of Khurai Chingangbam Leikai,<br>Thingom Leirak</p></div><div class="orn a">◆</div><div class="a r"><div class="small sm2">Bride’s Family</div><p>D/O Laikhuram Chaoba Singh &amp;<br>Laikhuram (O) Shanti Devi<br>of Top Mayai Leikai, Yaralpat</p></div></div>`),
  pg(`<h2 class="t a" style="font-size:2.6em">Save the Dates</h2><h3 class="hd a">February 2027</h3><div class="cal a z"><div class="grid">${cells}</div></div><div class="legend a">${EVENTS.map(e=>`<div><i></i><b>${fmt(e.date,{weekday:'short',day:'numeric',month:'short'})}</b> — ${e.name}, ${e.time}</div>`).join('')}</div>`),
- /* ── INSERT RSVP PAGE HERE ── */
  pg(rsvpPage),
  pg(`${L}<h2 class="t a" style="margin-top:.4em">With Love</h2><div class="small sm2 a">We look forward to celebrating with you</div><div class="orn a">◆</div><a class="btn a" href="${MAP.groom}" target="_blank" rel="noopener">Groom’s Location</a><a class="btn a" href="${MAP.bride}" target="_blank" rel="noopener">Bride’s Location</a><button class="btn a" id="again2">Read again</button>`)
 ];
@@ -220,7 +220,7 @@ const prev=document.getElementById('prev'),next=document.getElementById('next');
 leaves[0].onclick=()=>{if(cur===0){go(1);play()}};
 prev.onclick=()=>go(cur-1);next.onclick=()=>go(cur+1);
 
-/* ── NEW: RSVP form submit handler (silent, no email shown in HTML) ── */
+/* ── RSVP form submit handler ── */
 function bindRsvp(){
   const f=document.getElementById('rsvpForm');
   if(!f || f.dataset.bound) return;
@@ -261,7 +261,6 @@ addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0]
 const env=document.getElementById('env'),intro=document.getElementById('intro');let opened=false;
 env.onclick=()=>{if(opened)return;opened=true;env.classList.add('open');play();setTimeout(()=>intro.classList.add('gone'),3300)};
 go(0);
-// Bind RSVP once the DOM for that page exists (it's inserted via innerHTML above)
 bindRsvp();
 // petals
 const cols=['#c9a45c','#e3c98a','#b4685c','#f3e6c4','#d8a28f'];
