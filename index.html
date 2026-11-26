@@ -4,7 +4,7 @@
 <title>Tondonba &amp; Anzila · Wedding</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Marcellus&family=Pinyon+Script&family=Jost:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--pic:url(photo.jpg);--ivory:#faf5ea;--ink:#3b3a2f;--gold:#c9a45c;--gold2:#a8843f;--leaf:#14342b;--deep:#0b211b;--pink:#b4685c;--maroon:#7d2f2a;--serif:'Cormorant Garamond',Georgia,serif;--head:'Marcellus',Georgia,serif;--script:'Pinyon Script','Snell Roundhand','Segoe Script',cursive;--sans:'Jost',system-ui,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--pic:url(photo.png);--ivory:#faf5ea;--ink:#3b3a2f;--gold:#c9a45c;--gold2:#a8843f;--leaf:#14342b;--deep:#0b211b;--pink:#b4685c;--maroon:#7d2f2a;--serif:'Cormorant Garamond',Georgia,serif;--head:'Marcellus',Georgia,serif;--script:'Pinyon Script','Snell Roundhand','Segoe Script',cursive;--sans:'Jost',system-ui,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;overflow:hidden;background:var(--deep);font-family:var(--serif);color:var(--ink)}
 .stage{touch-action:none;position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2vh;background:radial-gradient(circle at 50% 25%,#1d4a3d,#0b211b 100%)}
@@ -119,8 +119,7 @@ h3.hd{font:400 1.5em var(--head);letter-spacing:.14em;text-transform:uppercase;c
   <div class="ctl"><button id="prev" aria-label="Previous">‹</button><div class="dots" id="dots"></div><button id="next" aria-label="Next">›</button></div>
 </div>
 <script>
-const MUSIC_SRC = "wedding.mp3"; 
-const EVENTS = [
+const MUSIC_SRC = "wedding.mp3";
   {name:"Heijingpot", date:[2027,2,6],  time:"9 AM",  place:"At the Bride’s Residence", anim:"l"},
   {name:"Wedding Ceremony", date:[2027,2,8], time:"1 PM", place:"At the Bride’s Residence", anim:"z", main:true},
   {name:"Mapam Chakkouba", date:[2027,2,12], time:"11 AM", place:"At the Bride’s Residence", anim:"r"}
